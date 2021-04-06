@@ -12,10 +12,16 @@ from dgllife.utils import EarlyStopping, Meter
 
 def main(args):
     train_set, val_set, test_set = dataset_loader(args)
-    labels = []
-    for item in train_set:
-        labels.append(item[2])
-    train_loader = DataLoader(dataset=train_set, sampler=BalancedBatchSampler(train_set, torch.Tensor(labels)),batch_size=args['batch_size'],
+    if args['sampler'] == 'canonical':
+        sampler = None
+        shuffle = True
+    elif args['sampler']=='over_sampling':
+        labels = []
+        for item in train_set:
+            labels.append(item[2])
+        sampler = BalancedBatchSampler(train_set, torch.Tensor(labels))
+        shuffle = None
+    train_loader = DataLoader(dataset=train_set, sampler=sampler, shuffle=shuffle, batch_size=args['batch_size'],
                               collate_fn=collate_molgraphs, num_workers=args['num_workers'])
     val_loader = DataLoader(dataset=val_set, batch_size=args['batch_size'],
                             collate_fn=collate_molgraphs, num_workers=args['num_workers'])

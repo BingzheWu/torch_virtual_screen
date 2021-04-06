@@ -1,8 +1,9 @@
 dataset: HIV
+sampler: over_sampling
 split_ratio: 0.8,0.1,0.1
 split: scaffold
 model: GCN
-result_path: 'logs/HIV_GCN'
+result_path: 'logs/HIV_GCN_over_sampling'
 metric: 'roc_auc_score'
 num_epochs: 1000
 task_names: HIV_active
