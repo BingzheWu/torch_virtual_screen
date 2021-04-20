@@ -27,6 +27,7 @@ def main(args):
                             collate_fn=collate_molgraphs, num_workers=args['num_workers'])
     test_loader = DataLoader(dataset=test_set, batch_size=args['batch_size'],
                              collate_fn=collate_molgraphs, num_workers=args['num_workers'])
+    print(len(train_loader))
     model = load_model(args)
     loss_criterion = nn.BCEWithLogitsLoss(reduction='none')
     optimizer = Adam(model.parameters(), lr = args['lr'],

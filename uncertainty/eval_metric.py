@@ -3,6 +3,7 @@ import numpy as np
 
 def tpr(results, threshold=0.5):
     y_prob = results['predictions'][:,1]
+    print(y_prob.max())
     y_true = results['targets']
     y_pred = np.where(y_prob>=threshold, 1, 0)
     print((y_pred==y_true).mean())
@@ -14,7 +15,7 @@ def tpr(results, threshold=0.5):
     print("FPR at threshold is {}".format((fp/(fp+tn))))
 
 if __name__ == '__main__':
-    result_file = "logs/HIV_MPNN/HIV_HIV_activetest.npz"
+    result_file = "logs/HIV_GCN/HIV_HIV_activetest.npz"
     results = np.load(result_file)
     tpr(results)
 

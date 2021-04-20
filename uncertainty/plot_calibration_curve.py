@@ -61,11 +61,11 @@ def get_path(filename, append="", no_npz=False):
     return path
 
 def plot():
-    result_tox21_gcn = np.load('logs/HIV_GCN/HIV_HIV_activetest.npz')
-    result_tox21_mpnn = np.load('logs/HIV_MPNN/HIV_HIV_activetest.npz')
+    result_tox21_gcn = np.load('logs/HIV_GCN_over_sampling/HIV_HIV_activetest.npz')
+    result_tox21_mpnn = np.load('logs/HIV_GCN_normal/HIV_HIV_activetest.npz')
     methods = [
         (result_tox21_gcn, "GCN"),
-        (result_tox21_mpnn, 'MPNN')
+        (result_tox21_mpnn, 'GCN-normal')
     ]
     results = dict()
     x = np.arange(args.num_bins)
