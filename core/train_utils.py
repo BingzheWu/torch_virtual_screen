@@ -86,6 +86,20 @@ def load_model(args):
             num_layer_set2set=args['num_layer_set2set'],
             n_tasks=args['n_tasks']
         )
+    elif args['model'] == 'GAT':
+        from dgllife.model import GATPredictor
+        model = GATPredictor(
+            in_feats=args['in_node_feats'],
+            hidden_feats=[args['gnn_hidden_feats']] * args['num_gnn_layers'],
+            num_heads=[args['num_heads']] * args['num_gnn_layers'],
+            feat_drops=[args['dropout']] * args['num_gnn_layers'],
+            attn_drops=[args['dropout']] * args['num_gnn_layers'],
+            alphas=[args['alpha']] * args['num_gnn_layers'],
+            residuals=[args['residual']] * args['num_gnn_layers'],
+            predictor_hidden_feats=args['predictor_hidden_feats'],
+            predictor_dropout=args['dropout'],
+            n_tasks=args['n_tasks']
+        )
     model = model.to(args['device'])
     return model
 
