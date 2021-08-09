@@ -22,7 +22,7 @@ def main(args):
                              collate_fn=collate_molgraphs, num_workers=args['num_workers'])
     #print(len(train_loader))
     model = load_model(args)
-    loss_criterion = nn.SmoothL1Loss(reduction='none')
+    loss_criterion = nn.L1Loss(reduction='none')
     optimizer = Adam(model.parameters(), lr=args['lr'],
                          weight_decay=args['weight_decay'])
     stopper = EarlyStopping(patience=args['patience'],
