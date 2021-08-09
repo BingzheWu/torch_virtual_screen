@@ -35,7 +35,7 @@ def dataset_loader(args, split=True):
                       edge_featurizer=args['edge_featurizer'],
                       n_jobs=1 if args['num_workers'] == 0 else args['num_workers'])
     if args['dataset'] == 'ESOL':
-        dataset = ESOL(smiles_to_bigraph, node_featurizer=args['node_featurizer'])
+        dataset = ESOL(partial(smiles_to_bigraph, add_self_loop=True), node_featurizer=args['node_featurizer'])
     train_set, val_set, test_set = split_dataset(args, dataset)
     if split:
         return train_set, val_set, test_set
