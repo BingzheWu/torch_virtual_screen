@@ -1,5 +1,7 @@
+import os
+os.system("which python")
+import torch
 import sys
-sys.path.append('./')
 from core.train_utils import run_a_train_epoch, init_featurizer, load_model, mkdir_p, run_an_eval_epoch
 from core.dataset import dataset_loader, collate_molgraphs, BalancedBatchSampler
 import yaml

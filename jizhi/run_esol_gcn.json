@@ -1,0 +1,11 @@
+{
+    "Token": "KAqcJPyzssEyz4uuRnuT6w",
+    "business_flag": "DrugAI",
+    "task_flag":"",
+    "model_local_file_path": "/apdcephfs/private_bingzhewu/torch_virtual_screen/",
+    "init_cmd": "",
+    "start_cmd":"/apdcephfs/private_bingzhewu/torch_virtual_screen/jizhi/run_esol_gcn.sh",
+    "host_num": 1,
+    "host_gpu_num":1,
+    "image_full_name":"mirrors.tencent.com/wbz/fed_drug:latest"
+  }

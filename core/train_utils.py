@@ -1,3 +1,4 @@
+import dgllife
 from dgllife.model.gnn.gcn import GCN
 import numpy as np
 import torch.nn.functional as F
