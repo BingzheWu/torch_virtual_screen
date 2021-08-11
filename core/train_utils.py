@@ -101,6 +101,17 @@ def load_model(args):
             predictor_dropout=args['dropout'],
             n_tasks=args['n_tasks']
         )
+    elif args['model'] == 'GraphSage':
+        from core.models.graphsage import GSPredictor
+        model = GSPredictor(
+            in_feats=args['in_node_feats'],
+            hidden_feats=[args['gnn_hidden_feats']]*args['num_gnn_layers'],
+            activation=[F.relu]*args['num_gnn_layers'],
+            dropout=[args['dropout']] * args['num_gnn_layers'],
+            predictor_hidden_feats=args['predictor_hidden_feats'],
+            predictor_dropout=args['dropout'],
+            n_tasks=args['n_tasks']
+        )
     model = model.to(args['device'])
     return model
 

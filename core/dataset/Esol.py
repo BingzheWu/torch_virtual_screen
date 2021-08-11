@@ -2,6 +2,7 @@ from dgllife.data import MoleculeCSVDataset
 from dgl.data.utils import get_download_dir, download, _get_dgl_url
 from dgllife.utils.mol_to_graph import smiles_to_bigraph 
 import pandas as pd
+import os
 
 class ESOL(MoleculeCSVDataset):
     r"""ESOL from MoleculeNet for the prediction of water solubility
@@ -98,15 +99,16 @@ class ESOL(MoleculeCSVDataset):
                  edge_featurizer=None,
                  load=False,
                  log_every=1000,
+                 data_path='/apdcephfs/private_bingzhewu/datasets/drug/ESOL',
                  cache_file_path='./esol_dglgraph.bin',
                  n_jobs=1):
 
-        self._url = 'dataset/ESOL.zip'
-        data_path = get_download_dir() + '/ESOL.zip'
-        dir_path = get_download_dir() + '/ESOL'
-        download(_get_dgl_url(self._url), path=data_path, overwrite=False)
+        #self._url = 'dataset/ESOL.zip'
+        #data_path = get_download_dir() + '/ESOL.zip'
+        #dir_path = get_download_dir() + '/ESOL'
+        #download(_get_dgl_url(self._url), path=data_path, overwrite=False)
         #extract_archive(data_path, dir_path)
-        df = pd.read_csv(dir_path + '/delaney-processed.csv')
+        df = pd.read_csv(os.path.join(data_path, 'delaney-processed.csv'))
 
         super(ESOL, self).__init__(df=df,
                                    smiles_to_graph=smiles_to_graph,

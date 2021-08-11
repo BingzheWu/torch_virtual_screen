@@ -1,6 +1,6 @@
 from dgl.transform import add_self_loop
-from dgllife.data import HIV
-from dgllife.data import ESOL
+from dgllife.data import HIV, ESOL
+#from .Esol import ESOL
 from .tox21 import Tox21
 from dgllife.utils import smiles_to_bigraph, mol_to_bigraph, ScaffoldSplitter, RandomSplitter
 import dgl

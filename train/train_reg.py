@@ -1,5 +1,6 @@
 import os
-os.system("which python")
+import torch
+print(torch.__version__)
 import torch
 import sys
 from core.train_utils import run_a_train_epoch, init_featurizer, load_model, mkdir_p, run_an_eval_epoch
@@ -65,9 +66,11 @@ if __name__ =='__main__':
         args['device'] = torch.device('cuda:0')
     else:
         args['device'] = torch.device('cpu')
+    args['device'] = torch.device("cuda:0")
     mkdir_p(args['result_path'])
     args = init_featurizer(args)
     args['in_node_feats'] = args['node_featurizer'].feat_size()
     if args['edge_featurizer'] is not None:
         args['in_edge_feats'] = args['edge_featurizer'].feat_size()
+    print(args['device'])
     main(args)
