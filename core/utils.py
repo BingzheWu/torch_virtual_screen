@@ -24,3 +24,17 @@ def load_args(args_file):
         args['task_names'] = None
         args['n_tasks'] = 12
     return args
+def init_args(arg_file):
+    import yaml
+    with open(arg_file, 'r') as f:
+        args = yaml.load(f)
+    if torch.cuda.is_available():
+        args['device'] = torch.device('cuda:0')
+    else:
+        args['device'] = torch.device('cpu')
+    mkdir_p(args['result_path'])
+    args = init_featurizer(args)
+    args['in_node_feats'] = args['node_featurizer'].feat_size()
+    if args['edge_featurizer'] is not None:
+        args['in_edge_feats'] = args['edge_featurizer'].feat_size()
+    return args 
