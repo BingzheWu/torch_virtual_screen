@@ -5,22 +5,36 @@ from typing import Tuple
 from collections import OrderedDict
 import fitlog
 import flwr as fl
+from flwr.server import strategy
 import numpy as np
-from flwr.server.strategy import FedAvg
+from flwr.server.strategy import FedAvg, FedAdagrad
 import torch
 from feddrug.data.gen_iid_data import load_fed_data
 from core.train_utils import init_featurizer, load_model, mkdir_p
 from feddrug.utils import run_fedavg_epoch, run_eval_epoch
 import feddrug.app
+import flwr.common
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 DATASET = Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]
 
 
-def start_server(return_dict, num_rounds: int, num_clients: int, fraction_fit: float):
+def start_server(args, return_dict):
     """Start the server with a slightly adjusted FedAvg strategy."""
     import feddrug
-    strategy = FedAvg(min_available_clients=num_clients, fraction_fit=fraction_fit)
+    strategy_name = args['strategy']
+    num_rounds = args['num_rounds']
+    num_clients = args['num_clients']
+    fraction_fit = args['fraction_fit']
+    eta_l = args['lr']
+    eta = args['eta']
+    if strategy_name == "fedavg":
+        strategy = FedAvg(min_available_clients=num_clients, fraction_fit=fraction_fit)
+    elif strategy_name == 'fedada':
+        model = load_model(args).to('cpu')
+        x = [ 1e-9*torch.zeros_like(val).cpu().numpy() if val.nelement() > 1 else val.view(-1).cpu().numpy() for _, val in model.state_dict().items()]
+        strategy = FedAdagrad(min_available_clients=num_clients, fraction_fit=fraction_fit, initial_parameters=flwr.common.weights_to_parameters(x),
+                    eta_l=eta_l, eta=eta)
     # Exposes the server by default on port 8080
     hist = feddrug.app.start_server(strategy=strategy, config={"num_rounds": num_rounds})
     return_dict['hist'] = hist
@@ -33,7 +47,6 @@ def start_client(args, dataset) -> None:
     model = load_model(args).to(DEVICE)
     # Unpack the CIFAR-10 dataset partition
     trainloader, testloader = dataset
-    print(len(testloader))
 
     class DrugClient(fl.client.NumPyClient):
         def get_parameters(self):
@@ -73,12 +86,9 @@ def run_simulation(args):
     processes = []
     mannager = torch.multiprocessing.Manager()
     return_dict = mannager.dict()
-    num_rounds = args['num_rounds']
-    num_clients = args['num_clients']
-    fraction_fit = args['fraction_fit']
     # Start the server
     server_process = Process(
-        target=start_server, args=(return_dict, num_rounds, num_clients, fraction_fit)
+        target=start_server, args=(args, return_dict)
     )
     server_process.start()
     processes.append(server_process)
@@ -89,7 +99,6 @@ def run_simulation(args):
     # Load the dataset partitions
     #partitions = dataset.load(num_clients)
     partitions, test_dl = load_fed_data(args)
-    print(partitions)
     # Start all the clients
     for partition in partitions:
         client_process = Process(target=start_client, args=(args, partition,))
@@ -104,7 +113,7 @@ def run_simulation(args):
     hist = return_dict['hist']
     for step, loss in hist.losses_distributed:
         fitlog.add_loss(loss,name="Loss",step=step)
-        #fitlog.add_metric({"dev":{"Acc":acc}}, step=step)
+        fitlog.add_metric({"dev":{"rmse":loss}}, step=step)
     fitlog.finish()
 
 if __name__ == "__main__":

@@ -8,8 +8,11 @@ def run_fedavg_epoch(args, model, data_loader):
     model.train()
     train_meter = Meter()
     loss_criterion = nn.SmoothL1Loss(reduction='none')
-    optimizer = Adam(model.parameters(), lr=args['lr'],
+    if args['local_optimizer']=='ADAM':
+        optimizer = Adam(model.parameters(), lr=args['lr'],
                          weight_decay=args['weight_decay'])
+    else:
+        optimizer = SGD(model.parameters(), lr=args['lr'], weight_decay=args['weight_decay'])
     for id, data in enumerate(data_loader):
         smiles, bg, labels, masks = data
         if len(smiles) == 1:
@@ -20,10 +23,6 @@ def run_fedavg_epoch(args, model, data_loader):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        #train_meter.update(logits, labels, masks)
-    #train_score = np.mean(train_meter.compute_metric(args['metric']))
-    #print('epoch {:d}/{:d}, training {} {:.4f}'.format(
-    #    epoch + 1, args['num_epochs'], args['metric'], train_score))
 def run_eval_epoch(args, model, data_loader):
     model.eval()
     eval_meter = Meter()
